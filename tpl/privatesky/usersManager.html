@@ -1,0 +1,109 @@
+<div ng-controller="userManagerController">
+
+    <div class="ng-scope" ui-view="">
+        <div class="bg-light lter b-b wrapper-md ng-scope">
+            <h1 class="m-n font-thin h3">Users Manager</h1>
+        </div>
+        <div class="wrapper-md ng-scope">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Search, Create or Update Users
+                </div>
+
+                <div class="panel-body b-b b-light" ng-show="!advancedSearching">
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="user.userName" placeholder="Search for...">
+                              <span class="input-group-btn">
+                                <button class="btn btn-primary" ng-click="performSearch()" type="button">Search</button>
+                                  <button class="btn btn-primary" ng-click="advancedSearching=!advancedSearching" type="button"><span class="glyphicon glyphicon-fullscreen"></span></button>
+                              </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-body b-b b-light" ng-show="advancedSearching">
+                    <div class="col-lg-6">
+                        <form name="form" class="form-validation">
+                            <div class="list-group list-group-sm">
+                                    <input type="text" placeholder="First Name" class="form-control" ng-model="user.firstName">
+                                    <input placeholder="Last Name" class="form-control " ng-model="user.lastName">
+                                    <input type="email" placeholder="Email" class="form-control " ng-model="user.email">
+                                    <input  placeholder="Username" class="form-control " ng-model="user.userName">
+                                    <label for="statusSelector"><h5>Status:</h5></label>
+                                    <select  id='statusSelector' ng-model="user.status">
+                                        <option >Please select</option>
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                            </div>
+                        </form>
+
+                        <span class="input-group-btn" >
+                                <button class="btn btn-primary" ng-click="performSearch()" type="button">Search</button>
+                                <button class="btn btn-primary" ng-click="advancedSearching=!advancedSearching" type="button"><span class="glyphicon glyphicon-fullscreen"></span></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div >
+                    <table class="table m-b-none footable-loaded footable default" ui-jq="footable" data-filter="#filter" data-page-size="config.pageSize">
+                        <thead>
+                            <tr>
+                                <th class="footable-visible footable-first-column footable-sortable" data-toggle="true">
+                                    First Name
+                                    <span class="footable-sort-indicator"></span></th>
+                                <th class="footable-visible footable-sortable">
+                                    Last Name
+                                    <span class="footable-sort-indicator"></span></th>
+                                <th class="footable-visible footable-sortable" data-hide="phone,tablet">
+                                    Email
+                                    <span class="footable-sort-indicator"></span></th>
+                                <th class="footable-visible footable-sortable" data-hide="phone,tablet" data-name="Date Of Birth">
+                                    Username
+                                    <span class="footable-sort-indicator"></span></th>
+                                <th class="footable-visible footable-last-column footable-sortable" data-hide="phone">
+                                    Status
+                                    <span class="footable-sort-indicator"></span></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr ng-repeat="user in allUsers.slice((currentPage-1)*itemsPerPage,currentPage*itemsPerPage)" class="footable-even" style="display: table-row;">
+                                <td class="footable-visible footable-first-column" ><span class="footable-toggle" >{{user.firstName}}</span></td>
+                                <td class="footable-visible"><span class="footable-toggle" >{{user.lastName}}</span></td>
+                                <td class="footable-visible">{{user.email}}</td>
+                                <td class="footable-visible" >{{user.userName}}</td>
+                                <td class="footable-visible ">
+                                    <span ng-show="user.status==='Active'" class="label bg-success" title="Active">Active</span>
+                                    <span ng-show="user.status==='Banned'" class="label bg-danger" title="Disabled">Banned</span></td>
+                                <td class="footable-visible footable-last-column">
+                                    <button class="label bg-white" ng-click="editUser(user)">Edit user</button></td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                    <div class="panel-body b-b b-light" >
+                        <div class="col-lg-6" >
+                            <pagination total-items="totalItems"
+                                        ng-model="currentPage"
+                                        max-size="maxSize"
+                                        class="pagination-sm"
+                                        boundary-links="true"
+                                        rotate="false"
+                                        num-pages="numPages"
+                                        items-per-page="itemsPerPage">
+                            </pagination>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-body b-b b-light">
+                    <div class="col-lg-6" style="float: right">
+                        <button style="float: right" class="btn btn-lg btn-primary" ng-click="createUser()" type="button">Create new user</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

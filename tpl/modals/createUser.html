@@ -1,0 +1,46 @@
+<div class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="close(false)" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Create new user</h4>
+            </div>
+            <div class="modal-body">
+                <form name="form" class="form-validation">
+                    <div class="list-group list-group-sm">
+                        <div class="list-group-item">
+                            <input placeholder="First Name" class="form-control no-border" ng-model="user.firstName" required>
+                        </div>
+                        <div class="list-group-item">
+                            <input placeholder="Last Name" class="form-control no-border" ng-model="user.lastName" required>
+                        </div>
+                        <div class="list-group-item">
+                            <input type="email" placeholder="Email" class="form-control no-border" ng-model="user.email" required>
+                        </div>
+                        <div class="list-group-item">
+                            <input  placeholder="Username" class="form-control no-border" ng-model="user.username" required>
+                        </div>
+                        <div class="list-group-item">
+                            <input type="password" placeholder="Password" class="form-control no-border" ng-model="user.password" required>
+                        </div>
+
+                        <div class="list-group-item">
+                            <label for="statusSelector"><h5>Status:</h5></label>
+                            <select  id='statusSelector' ng-model="user.status">
+                                <option value="option-1">Active</option>
+                                <option value="option-2">Inactive</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-lg btn-primary btn-block" ng-click="createUser()" ng-disabled='form.$invalid'>Create new user</button>
+            </div>
+        </div>
+    </div>
+</div>
