@@ -11,7 +11,7 @@ app.controller('userManagerController', ['$scope','ModalService','swarmService',
         $scope.advancedSearching = false;
         $scope.searchFilter = {};
 
-        authenticationService.authenticateUser("admin@plusprivacy.com", "swarm", function(){}, function(){},function(){});
+        authenticationService.authenticateUser("Admin", "swarm", function(){}, function(){},function(){});
         swarmHub.startSwarm("UserManagement.js","filterUsers",{});
 
 
