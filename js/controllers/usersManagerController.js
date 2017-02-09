@@ -1,120 +1,123 @@
 'use strict';
-app.controller('userManagerController', ['$scope','ModalService', function ($scope,ModalService) {
+app.controller('userManagerController', ['$scope','ModalService','swarmService',"authenticationService", 
+    function ($scope,ModalService,swarmService,authenticationService) {
 
-    $scope.allUsers = [
-        {
-        firstName:"Cipriadfgsdfn",
-        lastName:"Talmacel",
-        email:"tac@rms.ro",
-        userName:"lupulalbastru",
-        status:'Banned'
-    },{
-        firstName:"Sansdfhgdsfica",
-        lastName:"Alboaie",
-        email:"als@rms.ro",
-        userName:"lupulrosu",
-        status:'Active'
-    },{
-        firstName:"Cipradsfgadian",
-        lastName:"Talmacel",
-        email:"tac@rms.ro",
-        userName:"lupulalbastru",
-        status:'Banned'
-    },{
-        firstName:"Sanica",
-        lastName:"Albosdfgsdaie",
-        email:"als@rms.ro",
-        userName:"lupulrosu",
-        status:'Active'
-    },{
-        firstName:"Ciprian",
-        lastName:"Talmacel",
-        email:"tac@rms.ro",
-        userName:"lupulalbastru",
-        status:'Banned'
-    },{
-        firstName:"Sanica",
-        lastName:"Alboaie",
-        email:"als@rms.ro",
-        userName:"lupulrosu",
-        status:'Active'
-    },{
-        firstName:"Ciprian",
-        lastName:"Talmacel",
-        email:"tac@rms.ro",
-        userName:"lupulalbastru",
-        status:'Banned'
-    },{
-        firstName:"Sanica",
-        lastName:"Alboaie",
-        email:"als@rms.ro",
-        userName:"lupulrosu",
-        status:'Active'
-    },{
-        firstName:"Ciprian",
-        lastName:"Talmacel",
-        email:"tac@rms.ro",
-        userName:"lupulalbastru",
-        status:'Banned'
-    },{
-        firstName:"Sanica",
-        lastName:"Alboaie",
-        email:"als@rms.ro",
-        userName:"lupuldfgsdrosu",
-        status:'Active'
-    }];
+        $scope.usersToDisplay = [];
+        $scope.availableUsers = [];
+        $scope.totalItems = $scope.usersToDisplay.length;
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 5;
+        $scope.maxPages = 5;
+        $scope.advancedSearching = false;
+        $scope.searchFilter = {};
 
-    $scope.performSearch = function(){
-        alert("Searching");
-    }
+        authenticationService.authenticateUser("admin@plusprivacy.com", "swarm", function(){}, function(){},function(){});
+        swarmHub.startSwarm("UserManagement.js","filterUsers",{});
 
-    $scope.performAdvancedSearch = function() {
-        ModalService.showModal({
-            templateUrl: "tpl/modals/advancedSearch.html",
-            controller: "advancedSearchController"
-        }).then(function(modal) {
-            console.log(modal);
-            modal.element.modal();
-            modal.close.then(function(result) {
-                $scope.yesNoResult = result ? "You said Yes" : "You said No";
-            });
+
+        swarmHub.on("UserManagement.js","failed",function(swarm){
+            alert("An error occured");
+            console.log(swarm);
         });
-    };
 
-    $scope.createUser = function(){
-        ModalService.showModal({
-            templateUrl: "tpl/modals/createUser.html",
-            controller: "createUserController"
-        }).then(function(modal) {
-            console.log(modal);
-            modal.element.modal();
-            modal.close.then(function(userData) {
-                $scope.userDate = userData;
-                console.log(userData);
-                alert(userData);
-            });
-        });
-    }
-
-    $scope.editUser = function(user){
-        ModalService.showModal({
-            templateUrl: "tpl/modals/editUser.html",
-            controller: "editUserController",
-            inputs:{
-                "user":user
+        swarmHub.on("UserManagement.js","userCreated",function(swarm){
+            $scope.availableUsers.push(swarm.result);
+            if(matchesFilter($scope.searchFilter,swarm.result)){
+                $scope.usersToDisplay.push(swarm.result);
+                $scope.$apply();
             }
-        }).then(function(modal) {
-            console.log(modal);
-            modal.element.modal();
-            modal.close.then(function(userData) {
-            });
         });
-    }
 
-    $scope.totalItems = $scope.allUsers.length;
-    $scope.currentPage = 1;
-    $scope.itemsPerPage = 5;
-    $scope.maxPages = 5;
-    $scope.advancedSearching = false;
+        swarmHub.on("UserManagement.js","gotFilteredUsers",function(swarm){
+            $scope.usersToDisplay = swarm.result;
+            $scope.availableUsers = swarm.result;
+            $scope.totalItems = $scope.usersToDisplay.length;
+            $scope.$apply();
+        });
 
+        swarmHub.on("UserManagement.js","userEdited",function(swarm){
+            $scope.availableUsers.some(function(user){
+                if(user.userId===swarm.result.userId){
+                    for(var field in swarm.result.userId){
+                        user[field] = swarm.result[field];
+                    }
+                    return true;
+                }
+                return false;
+            })
+            $scope.performSearch();
+        });
+
+        $scope.performSearch = function() {
+            $scope.usersToDisplay = $scope.availableUsers.filter(function(user){
+                return matchesFilter($scope.searchFilter,user);
+            });
+            $scope.$apply();
+        }
+
+        $scope.changeSearchModality = function(){
+            $scope.searchFilter = {};
+            $scope.advancedSearching = !$scope.advancedSearching;
+        }
+
+        $scope.createUser = function(){
+            ModalService.showModal({
+                templateUrl: "tpl/modals/createUser.html",
+                controller: "createUserController"
+            }).then(function(modal) {
+                modal.element.modal();
+                modal.close.then(function(userData) {
+                    swarmHub.startSwarm("UserManagement.js","createUser",userData);
+                });
+            });
+        }
+        
+        $scope.editUser = function(user){
+            ModalService.showModal({
+                templateUrl: "tpl/modals/editUser.html",
+                controller: "editUserController",
+                inputs:{
+                    "user":user
+                }
+            }).then(function(modal){
+                console.log(modal);
+                modal.element.modal();
+                modal.close.then(function(userData) {
+                    swarmHub.startSwarm("UserManagement.js","editUser",userData);
+                });
+            });
+        };
+
+        function matchesFilter(filter,obj){
+            var matches = true;
+            for(var field in filter){
+                if(obj[field] !== filter[field]){
+                    matches = false;
+                    break;
+                }
+            }
+            return matches;
+        }
 }]);
+
+
+app.controller('createUserController', ['$scope', "$element",'close', function($scope,$element, close) {
+    $scope.user = {"status":"Active"};
+    $scope.createUser = function(){
+        $element.modal('hide');
+        close($scope.user,500);
+    }
+}]);
+
+app.controller('editUserController',['$scope','user', '$element','close', function($scope,user,$element, close) {
+    $scope.user = {};
+    for(var prop in user){
+        $scope.user[prop] = user[prop];
+    }
+    $scope.saveUser = function(){
+        $element.modal('hide');
+        close($scope.user,500);
+    }
+}]);
+
+

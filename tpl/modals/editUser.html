@@ -9,18 +9,20 @@
                 <form name="form" class="form-validation">
                     <div class="list-group list-group-sm">
                         <div class="list-group-item">
-                            <input placeholder="First Name" class="form-control no-border" ng-model="user.firstName" required>
+                            <input placeholder="First Name" class="form-control no-border" ng-model="user.firstName" >
                         </div>
                         <div class="list-group-item">
-                            <input placeholder="Last Name" class="form-control no-border" ng-model="user.lastName" required>
+                            <input placeholder="Last Name" class="form-control no-border" ng-model="user.lastName" >
                         </div>
                         <div class="list-group-item">
                             <input type="email" placeholder="Email" class="form-control no-border" ng-model="user.email" required>
                         </div>
                         <div class="list-group-item">
-                            <input  placeholder="Username" class="form-control no-border" ng-model="user.userName" required>
+                            <input  placeholder="Username" class="form-control no-border" ng-model="user.userName" >
                         </div>
-
+                        <div class="list-group-item">
+                            <input  placeholder="Access zones" class="form-control no-border" ng-model="user.zones" >
+                        </div>
                         <div class="list-group-item">
                             <label for="statusSelector"><h5>Status:</h5></label>
                             <select  id='statusSelector' ng-model="user.status">

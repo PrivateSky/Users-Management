@@ -13,7 +13,7 @@
                 <div class="panel-body b-b b-light" ng-show="!advancedSearching">
                     <div class="col-lg-6">
                         <div class="input-group">
-                            <input type="text" class="form-control" ng-model="user.userName" placeholder="Search for...">
+                            <input type="text" class="form-control" ng-model="searchFilter.userName" placeholder="Search for...">
                               <span class="input-group-btn">
                                 <button class="btn btn-primary" ng-click="performSearch()" type="button">Search</button>
                                   <button class="btn btn-primary" ng-click="advancedSearching=!advancedSearching" type="button"><span class="glyphicon glyphicon-fullscreen"></span></button>
@@ -26,16 +26,17 @@
                     <div class="col-lg-6">
                         <form name="form" class="form-validation">
                             <div class="list-group list-group-sm">
-                                    <input type="text" placeholder="First Name" class="form-control" ng-model="user.firstName">
-                                    <input placeholder="Last Name" class="form-control " ng-model="user.lastName">
-                                    <input type="email" placeholder="Email" class="form-control " ng-model="user.email">
-                                    <input  placeholder="Username" class="form-control " ng-model="user.userName">
-                                    <label for="statusSelector"><h5>Status:</h5></label>
-                                    <select  id='statusSelector' ng-model="user.status">
-                                        <option >Please select</option>
-                                        <option value="Active">Active</option>
-                                        <option value="Inactive">Inactive</option>
-                                    </select>
+                                <input type="text" placeholder="First Name" class="form-control" ng-model="searchFilter.firstName">
+                                <input placeholder="Last Name" class="form-control " ng-model="searchFilter.lastName">
+                                <input type="email" placeholder="Email" class="form-control " ng-model="searchFilter.email">
+                                <input  placeholder="Username" class="form-control " ng-model="searchFilter.userName">
+                                <input  placeholder="Access zones" class="form-control " ng-model="searchFilter.zones">
+                                <label for="statusSelector"><h5>Status:</h5></label>
+                                <select  id='statusSelector' ng-model="searchFilter.status">
+                                    <option >Please select</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
                             </div>
                         </form>
 
@@ -62,6 +63,9 @@
                                 <th class="footable-visible footable-sortable" data-hide="phone,tablet" data-name="Date Of Birth">
                                     Username
                                     <span class="footable-sort-indicator"></span></th>
+                                <th class="footable-visible footable-sortable" data-hide="phone,tablet" data-name="Date Of Birth">
+                                    Zones
+                                    <span class="footable-sort-indicator"></span></th>
                                 <th class="footable-visible footable-last-column footable-sortable" data-hide="phone">
                                     Status
                                     <span class="footable-sort-indicator"></span></th>
@@ -69,12 +73,14 @@
                         </thead>
 
                         <tbody>
-                            <tr ng-repeat="user in allUsers.slice((currentPage-1)*itemsPerPage,currentPage*itemsPerPage)" class="footable-even" style="display: table-row;">
+                            <tr ng-repeat="user in usersToDisplay.slice((currentPage-1)*itemsPerPage,currentPage*itemsPerPage)" class="footable-even" style="display: table-row;">
                                 <td class="footable-visible footable-first-column" ><span class="footable-toggle" >{{user.firstName}}</span></td>
                                 <td class="footable-visible"><span class="footable-toggle" >{{user.lastName}}</span></td>
                                 <td class="footable-visible">{{user.email}}</td>
                                 <td class="footable-visible" >{{user.userName}}</td>
+                                <td class="footable-visible" >{{user.zones}}</td>
                                 <td class="footable-visible ">
+
                                     <span ng-show="user.status==='Active'" class="label bg-success" title="Active">Active</span>
                                     <span ng-show="user.status==='Banned'" class="label bg-danger" title="Disabled">Banned</span></td>
                                 <td class="footable-visible footable-last-column">

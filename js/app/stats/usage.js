@@ -64,12 +64,4 @@ app.controller('SwarmsUsage', ['$scope', function ($scope) {
                 $scope.$apply();
             },10);
     });
-
-
-
-
-
-
-
-
 }]);

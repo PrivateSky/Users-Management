@@ -31,9 +31,7 @@ angular.module('app')
                             deps:['$ocLazyLoad',
                                 function ($ocLazyLoad) {
                                     return $ocLazyLoad.load([
-                                        'js/controllers/usersManagerController.js',
-                                        'js/controllers/createUserController.js',
-                                        'js/controllers/editUserController.js'
+                                        'js/controllers/usersManagerController.js'
                                     ]);
                                 }]
                         }

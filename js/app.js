@@ -15,8 +15,5 @@ angular.module('app', [
     'ui.validate',
     'oc.lazyLoad',
     'pascalprecht.translate',
-    'TreeWidget',
-    'infinite-scroll',
-    'angularBootstrapNavTree',
     'angularModalService'
 ]);
