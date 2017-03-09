@@ -482,7 +482,7 @@ function hashThisPassword(plainPassword,salt,callback){
 
 container.declareDependency("UsersManagerAdapter", ["redisPersistence"], function (outOfService, redisPersistence) {
     if (!outOfService) {
-        console.log("Enabling persistence...", redisPersistence);
+        console.log("Enabling persistence...");
 
     } else {
         console.log("Disabling persistence...");

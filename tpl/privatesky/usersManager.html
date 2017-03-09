@@ -87,21 +87,40 @@
                                     <button class="label bg-white" ng-click="editUser(user)">Edit user</button></td>
                             </tr>
                         </tbody>
+                        <tfoot ng-show="maxNrOfPages>1" class="hide-if-no-paging">
+                        <tr>
+                            <td colspan="5" class="text-center footable-visible">
+                                <ul class="pagination">
+                                    <li ng-show="currentPage>1" class="footable-page-arrow">
+                                        <a ng-click="changePage(1)">«</a>
+                                    </li>
+                                    <li ng-show="currentPage>1" class="footable-page-arrow">
+                                        <a ng-click="changePage(currentPage-1)">‹</a>
+                                    </li>
 
+                                    <li ng-if="currentPage>1" class="footable-page">
+                                        <a data-page="0" ng-click="changePage(currentPage-1)">{{currentPage-1}}</a>
+                                    </li>
+
+                                    <li class="footable-page active">
+                                        <a>{{currentPage}}</a>
+                                    </li>
+                                    <li ng-if="currentPage<maxNrOfPages" class="footable-page">
+                                        <a ng-click="changePage(currentPage+1)">{{currentPage+1}}</a>
+                                    </li>
+
+                                    <li ng-show="currentPage<maxNrOfPages" class="footable-page-arrow">
+                                        <a ng-click="changePage(currentPage+1)">›</a>
+                                    </li>
+                                    <li ng-show="currentPage<maxNrOfPages" class="footable-page-arrow">
+                                        <a ng-click="changePage(maxNrOfPages)">»</a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                        </tfoot>
                     </table>
-                    <div class="panel-body b-b b-light" >
-                        <div class="col-lg-6" >
-                            <pagination total-items="totalItems"
-                                        ng-model="currentPage"
-                                        max-size="maxSize"
-                                        class="pagination-sm"
-                                        boundary-links="true"
-                                        rotate="false"
-                                        num-pages="numPages"
-                                        items-per-page="itemsPerPage">
-                            </pagination>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="panel-body b-b b-light">

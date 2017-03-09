@@ -1,7 +1,7 @@
 'use strict';
 app.controller('userManagerController', ['$scope','ModalService','swarmService',"authenticationService", 
     function ($scope,ModalService,swarmService,authenticationService) {
-
+        $scope.searchFilter = {};
         $scope.usersToDisplay = [];
         $scope.availableUsers = [];
         $scope.totalItems = $scope.usersToDisplay.length;
@@ -10,49 +10,51 @@ app.controller('userManagerController', ['$scope','ModalService','swarmService',
         $scope.maxPages = 5;
         $scope.advancedSearching = false;
         $scope.searchFilter = {};
+        $scope.maxNrOfPages = 0;
 
-        authenticationService.authenticateUser("Admin", "swarm", function(){}, function(){},function(){});
+
+        authenticationService.authenticateUser("admin@plusprivacy.com", "swarm", function(){}, function(){},function(){});
         swarmHub.startSwarm("UserManagement.js","filterUsers",{});
 
 
         swarmHub.on("UserManagement.js","failed",function(swarm){
-            alert("An error occured");
-            console.log(swarm);
+            console.log("Error "+swarm.err+" occured");
         });
 
         swarmHub.on("UserManagement.js","userCreated",function(swarm){
-            $scope.availableUsers.push(swarm.result);
-            if(matchesFilter($scope.searchFilter,swarm.result)){
-                $scope.usersToDisplay.push(swarm.result);
-                $scope.$apply();
-            }
+            $scope.availableUsers.unshift(swarm.result);
+            $scope.performSearch();
+            $scope.$apply();
         });
 
         swarmHub.on("UserManagement.js","gotFilteredUsers",function(swarm){
-            $scope.usersToDisplay = swarm.result;
             $scope.availableUsers = swarm.result;
-            $scope.totalItems = $scope.usersToDisplay.length;
+            $scope.performSearch();
             $scope.$apply();
         });
 
         swarmHub.on("UserManagement.js","userEdited",function(swarm){
-            $scope.availableUsers.some(function(user){
+            $scope.availableUsers = $scope.availableUsers.map(function(user){
                 if(user.userId===swarm.result.userId){
-                    for(var field in swarm.result.userId){
-                        user[field] = swarm.result[field];
-                    }
-                    return true;
+                    return swarm.result;
                 }
-                return false;
-            })
+                return user;
+            });
             $scope.performSearch();
+            $scope.$apply();
         });
 
         $scope.performSearch = function() {
-            $scope.usersToDisplay = $scope.availableUsers.filter(function(user){
-                return matchesFilter($scope.searchFilter,user);
+            $scope.usersToDisplay = [];
+            $scope.availableUsers.forEach(function(user){
+                if(matchesFilter($scope.searchFilter,user)){
+                    $scope.usersToDisplay.push(user);
+                }
             });
-            $scope.$apply();
+
+            console.log("USERS TO DISPLAY",$scope.usersToDisplay,$scope.availableUsers,$scope.searchFilter);
+            $scope.maxNrOfPages = Math.floor($scope.usersToDisplay.length/$scope.itemsPerPage);
+            $scope.maxNrOfPages += $scope.usersToDisplay.length%$scope.itemsPerPage!==0?1:0;
         }
 
         $scope.changeSearchModality = function(){
@@ -60,6 +62,10 @@ app.controller('userManagerController', ['$scope','ModalService','swarmService',
             $scope.advancedSearching = !$scope.advancedSearching;
         }
 
+        $scope.changePage = function(currentPage){
+            $scope.currentPage = currentPage;
+        }
+        
         $scope.createUser = function(){
             ModalService.showModal({
                 templateUrl: "tpl/modals/createUser.html",
@@ -91,7 +97,7 @@ app.controller('userManagerController', ['$scope','ModalService','swarmService',
         function matchesFilter(filter,obj){
             var matches = true;
             for(var field in filter){
-                if(obj[field] !== filter[field]){
+                if(obj[field] !== filter[field] && filter[field]!==""){
                     matches = false;
                     break;
                 }
@@ -116,6 +122,7 @@ app.controller('editUserController',['$scope','user', '$element','close', functi
     }
     $scope.saveUser = function(){
         $element.modal('hide');
+        console.log($scope.user);
         close($scope.user,500);
     }
 }]);
